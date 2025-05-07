@@ -5,6 +5,7 @@ from perturbation_analysis.monte_carlo import run_monte_carlo
 from perturbation_analysis.perturbation_utils import needs_perturbation
 from PIL import Image
 from bloxnet.pybullet.pybullet_images import get_imgs
+from bloxnet.utils.utils import slugify
 
 
 def _setup_scene():
@@ -46,6 +47,16 @@ def run_perturbation_analysis(assembly):
     assembly.isometric_image = final_img
     return assembly
 
+def perturb_object(object):
+    print (f"Running perturbation on {object}")
+    try:
+        assembly = Assembly.load(f"gpt_caching/{slugify(object)}/best_assembly/assembly.pkl")
+        assembly = run_perturbation_analysis(assembly)
+        assembly.human_friendly_save(f"perturbation_analysis/perturbation_analysis/{slugify(object)}")
+    except Exception as e:
+        print("-----------------")
+        print(f"{object} failed, {e}")
+        print("-----------------")
 
 if __name__ == "__main__":
     assembly = Assembly.load("gpt_caching/rook-chess-piece/best_assembly/assembly.pkl")
